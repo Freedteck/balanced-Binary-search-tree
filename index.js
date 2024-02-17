@@ -13,6 +13,7 @@ class Tree {
     this.root = this.buildTree(arr);
   }
 
+  // Function to build a balanced BST from a sorted array
   buildTree(array) {
     const sortArr = sortArray(array);
 
@@ -28,10 +29,12 @@ class Tree {
     return root;
   }
 
+  // Function to insert a value into the BST
   insert(value) {
     this.root = this.insertRecursive(this.root, value);
   }
 
+  // Recursive helper function for insert operation
   insertRecursive(root, value) {
     if (root === null) {
       return new Node(value);
@@ -46,10 +49,12 @@ class Tree {
     return root;
   }
 
+  // Function to delete a value from the BST
   delete(value) {
     this.root = this.deleteRecursive(this.root, value);
   }
 
+  // Recursive helper function for delete operation
   deleteRecursive(root, value) {
     if (root === null) {
       return null;
@@ -73,10 +78,12 @@ class Tree {
     return root;
   }
 
+  // Function to find a value in the BST
   find(value) {
     return this.findRecursive(this.root, value);
   }
 
+  // Recursive helper function for find operation
   findRecursive(root, value) {
     if (root === null || root.data === value) {
       return root;
@@ -89,6 +96,170 @@ class Tree {
     }
   }
 
+  // Function to perform level order traversal
+  levelOrder(callback) {
+    if (!this.root) {
+      return [];
+    }
+
+    let result = [];
+    const queue = [this.root];
+
+    while (queue.length > 0) {
+      const currentNode = queue.shift();
+      result.push(callback ? callback(currentNode) : currentNode.data);
+
+      if (currentNode.left) {
+        queue.push(currentNode.left);
+      }
+      if (currentNode.right) {
+        queue.push(currentNode.right);
+      }
+    }
+    return result;
+  }
+
+  // Function to perform in-order traversal
+  inOrder(root, callback) {
+    if (!root) {
+      return [];
+    }
+
+    const result = [];
+
+    function traverse(node) {
+      if (node.left) {
+        traverse(node.left);
+      }
+      result.push(callback ? callback(node) : node.data);
+      if (node.right) {
+        traverse(node.right);
+      }
+    }
+
+    traverse(root);
+    return result;
+  }
+
+  // Function to perform pre-order traversal
+  preOrder(root, callback) {
+    if (!root) {
+      return [];
+    }
+
+    const result = [];
+
+    function traverse(node) {
+      result.push(callback ? callback(node) : node.data);
+      if (node.left) {
+        traverse(node.left);
+      }
+      if (node.right) {
+        traverse(node.right);
+      }
+    }
+
+    traverse(root);
+    return result;
+  }
+
+  // Function to perform post-order traversal
+  postOrder(root, callback) {
+    if (!root) {
+      return [];
+    }
+
+    const result = [];
+
+    function traverse(node) {
+      if (node.left) {
+        traverse(node.left);
+      }
+      if (node.right) {
+        traverse(node.right);
+      }
+      result.push(callback ? callback(node) : node.data);
+    }
+
+    traverse(root);
+    return result;
+  }
+
+  // Function to calculate the height of a node
+  height(node) {
+    if (!node) {
+      return 0;
+    }
+
+    const leftHeight = this.height(node.left);
+    const rightHeight = this.height(node.right);
+
+    return Math.max(leftHeight, rightHeight) + 1;
+  }
+
+  // Function to calculate the depth of a node
+  depth(node) {
+    return this.depthRecursive(this.root, node, 0);
+  }
+
+  // Recursive helper function for depth calculation
+  depthRecursive(root, targetNode, currentDepth) {
+    if (!root) {
+      return -1;
+    }
+
+    if (root === targetNode) {
+      return currentDepth;
+    }
+
+    const leftDepth = this.depthRecursive(
+      root.left,
+      targetNode,
+      currentDepth + 1
+    );
+    if (leftDepth !== -1) {
+      return leftDepth;
+    }
+
+    const rightDepth = this.depthRecursive(
+      root.right,
+      targetNode,
+      currentDepth + 1
+    );
+    return rightDepth;
+  }
+
+  // Function to check if the tree is balanced
+  isBalanced() {
+    return this.isBalancedRecursive(this.root);
+  }
+
+  // Recursive helper function for balance check
+  isBalancedRecursive(node) {
+    if (!node) {
+      return true;
+    }
+
+    const leftHeight = this.height(node.left);
+    const rightHeight = this.height(node.right);
+
+    if (Math.abs(leftHeight - rightHeight) > 1) {
+      return false;
+    }
+
+    return (
+      this.isBalancedRecursive(node.left) &&
+      this.isBalancedRecursive(node.right)
+    );
+  }
+
+  // Function to rebalance the tree
+  rebalance() {
+    const nodes = this.inOrder(this.root);
+    this.root = this.buildTree(nodes);
+  }
+
+  // Function to get the minimum value in a subtree
   getMinValue(root) {
     let minValue = root.data;
 
@@ -99,9 +270,18 @@ class Tree {
 
     return minValue;
   }
+
+  // Static function to generate an array of random numbers
+  static getRandomNumbers(count, max) {
+    const randomNumbers = [];
+    for (let i = 0; i < count; i++) {
+      randomNumbers.push(Math.floor(Math.random() * max));
+    }
+    return randomNumbers;
+  }
 }
 
-// function to sort Array
+// Function to sort an array and remove duplicates
 const sortArray = (arr) => {
   let uniqueArray = [];
   for (let i = 0; i < arr.length; i++) {
@@ -112,9 +292,10 @@ const sortArray = (arr) => {
   return uniqueArray.sort((a, b) => a - b);
 };
 
-const arr = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
+// Driver script
+const randomNumbers = Tree.getRandomNumbers(10, 100);
 
-console.log(sortArray(arr));
+// Function to pretty print the tree
 const prettyPrint = (node, prefix = "", isLeft = true) => {
   if (node === null) {
     return;
@@ -127,3 +308,10 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
     prettyPrint(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true);
   }
 };
+
+// Creating an instance of the Tree with random numbers
+const test = new Tree(randomNumbers);
+
+// Pretty printing the tree and displaying the level order traversal
+prettyPrint(test.root);
+console.log(test.levelOrder());
